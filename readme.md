@@ -5,6 +5,8 @@ A lightweight ORM wrapper for ADO.NET providers
 [![](https://dev.azure.com/drockso/Xyapper/_apis/build/status/drockso.Xyapper)]()
 
 # Advantages
+**All-purpose.** Works great with any ADO.NET provider!
+
 **Tiny and lighweight.** Has only one external dependency for logging. 
 
 **Blazing fast.** It uses and runtime compile expressions to deserialize data faster than competitors!

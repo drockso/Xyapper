@@ -19,7 +19,7 @@ steps:
   inputs:
     command: 'push'
     feedsToUse: 'select'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+    packagesToPush: '*.nupkg'
     nuGetFeedType: 'internal'
     publishVstsFeed: 'NugetXyapper'
     publishPackageMetadata: false

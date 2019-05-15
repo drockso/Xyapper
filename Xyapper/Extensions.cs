@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -154,6 +153,7 @@ namespace Xyapper
             }
         }
 
+
         /// <summary>
         /// Get DataTable from DB
         /// </summary>
@@ -183,6 +183,78 @@ namespace Xyapper
                 }
             }
         }
+
+        /// <summary>
+        /// Get a single record from DB
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="connection">DB Connection</param>
+        /// <param name="command">DB Command to execute</param>
+        /// <param name="transaction">Transaction to use</param>
+        /// <returns></returns>
+        public static T XQuerySingle<T>(this IDbConnection connection, IDbCommand command, IDbTransaction transaction = null) where T : new()
+        {
+            return connection.XQuery<T>(command, transaction).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Get a single record from DB
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="connection">DB Connection</param>
+        /// <param name="commandText">Plain command text</param>
+        /// <param name="parameterSet">Anonymous type object with parameters</param>
+        /// <param name="transaction">Transaction to use</param>
+        /// <returns></returns>
+        public static T XQuerySingle<T>(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null) where T : new()
+        {
+            return connection.XQuery<T>(commandText, parameterSet, transaction).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Get a single value from DB
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="connection">DB Connection</param>
+        /// <param name="command">DB Command to execute</param>
+        /// <param name="transaction">Transaction to use</param>
+        /// <returns></returns>
+        public static T XQueryScalar<T>(this IDbConnection connection, IDbCommand command, IDbTransaction transaction)
+        {
+            connection.OpenIfNot();
+            command.Connection = connection;
+            command.Transaction = transaction;
+
+            LogCommand(command);
+
+            using (var reader = command.ExecuteReader())
+            {
+                reader.Read();
+                return reader[0].ToType<T>();
+            }
+        }
+
+        /// <summary>
+        /// Get a single value from DB
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="connection">DB Connection</param>
+        /// <param name="commandText">Plain command text</param>
+        /// <param name="parameterSet">Anonymous type object with parameters</param>
+        /// <param name="transaction">Transaction to use</param>
+        /// <returns></returns>
+        public static T XQueryScalar<T>(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null)
+        {
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandType = CommandType.Text;
+                command.CommandText = commandText;
+                AddParameters(command, parameterSet);
+
+                return connection.XQueryScalar<T>(command, transaction);
+            }
+        }
+
 
         /// <summary>
         /// Add parameters to command from anonymous type

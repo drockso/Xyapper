@@ -16,20 +16,22 @@ namespace Xyapper.Benchmark
         static void Main(string[] args)
         {
             XyapperManager.EnableLogging = true;
-            var factory = new NLog.Extensions.Logging.NLogLoggerFactory();
-            XyapperManager.Logger = factory.CreateLogger("Xyapper");
+            XyapperManager.Logger = new NLog.Extensions.Logging.NLogLoggerFactory().CreateLogger("Xyapper");
 
+            //int? result = Connection.XQueryScalar<int?>("SELECT @value", new {Value = 1});
 
-            Console.WriteLine("Hello World!");
+            //Console.WriteLine("Hello World!");
 
-            var data = Connection.XQuery<Bond>("SELECT TOP 100 * FROM [zeusnt].[MurexBond]");
-            Connection.XBulkCopy("MurexBond3", data, "zeusnt");
+            //var data = Connection.XQuery<Bond>("SELECT TOP 100 * FROM [zeusnt].[MurexBond]");
+            //Connection.XBulkCopy("MurexBond3", data, "zeusnt");
 
-            Console.ReadLine();
+            //Console.ReadLine();
 
             //return;
 
-
+            var myResult = Connection.XQuery<MyClass>(
+                "SELECT @FieldInt AS [FieldInt], @FieldString AS [FieldString], @FieldDateTime AS [FieldDateTime]",
+                new {FieldInt = 1, FieldString = "test", FieldDateTime = DateTime.Now}).ToArray();
 
             //var bond = reader(null);
 
@@ -52,6 +54,9 @@ namespace Xyapper.Benchmark
                 var data31 = Connection.XQuery<Bond>(query).ToArray();
                 sw.Stop();
                 Console.WriteLine("Static: {0} ms {1}", sw.ElapsedMilliseconds, data31.Count());
+
+
+                
 
                 sw.Reset();
                 sw.Start();

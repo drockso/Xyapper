@@ -15,5 +15,12 @@ steps:
 - script: dotnet build --configuration $(buildConfiguration) --output out
   displayName: 'dotnet build $(buildConfiguration)'
 
-- script: dotnet publish --configuration $(buildConfiguration)
-  displayName: 'dotnet publish $(buildConfiguration)'
+- task: NuGetCommand@2
+  inputs:
+    command: 'push'
+    feedsToUse: 'select'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: 'NugetXyapper'
+    publishPackageMetadata: false
+    versioningScheme: 'off'

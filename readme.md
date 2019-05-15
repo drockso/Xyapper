@@ -55,52 +55,52 @@ var data = Connection.XQuerySingle<MyCustomType>("SELECT * FROM [dbo].[MyCustomT
 
 Declare types to be deserialized automatically
 ```csharp
-	public class MyClass
-	{
-		public int FieldInt { get; set; }
+public class MyClass
+{
+	public int FieldInt { get; set; }
 
-		public string FieldString { get; set; }
+	public string FieldString { get; set; }
 
-		public DateTime FieldDateTime { get; set; }
+	public DateTime FieldDateTime { get; set; }
 
-		[ColumnMapping(ignore:true)]
-		public float FieldToIgnore { get; set; }
+	[ColumnMapping(ignore:true)]
+	public float FieldToIgnore { get; set; }
 
-		[ColumnMapping(columnName: "FieldInt")]
-		public int FieldToMap { get; set; }
-	}
+	[ColumnMapping(columnName: "FieldInt")]
+	public int FieldToMap { get; set; }
+}
 ```
 and query them easyly
 ```csharp
-	var myResult = Connection.XQuery<MyClass>(
-		"SELECT @FieldInt AS [FieldInt], @FieldString AS [FieldString], @FieldDateTime AS [FieldDateTime]",
-		new {FieldInt = 1, FieldString = "test", FieldDateTime = DateTime.Now}).ToArray();
+var myResult = Connection.XQuery<MyClass>(
+	"SELECT @FieldInt AS [FieldInt], @FieldString AS [FieldString], @FieldDateTime AS [FieldDateTime]",
+	new {FieldInt = 1, FieldString = "test", FieldDateTime = DateTime.Now}).ToArray();
 ```
 
 Want to deserialize a type manually? No problem!
 ```csharp
-	public class MyClass : ICustomDeserialized
+public class MyClass : ICustomDeserialized
+{
+	public int FieldInt { get; set; }
+
+	public string FieldString { get; set; }
+
+	public DateTime? FieldDateTime { get; set; }
+
+	public void Deserialize(IDataRecord record)
 	{
-		public int FieldInt { get; set; }
-
-		public string FieldString { get; set; }
-
-		public DateTime? FieldDateTime { get; set; }
-
-		public void Deserialize(IDataRecord record)
-		{
-			FieldInt = Xyapper.Internal.TypeConverter.ToType<int>(record["FieldInt"]);
-			FieldString = Xyapper.Internal.TypeConverter.ToType<string>(record["FieldString"]);
-			FieldDateTime = Xyapper.Internal.TypeConverter.ToType<DateTime?>(record["FieldDateTime"]);
-		}
+		FieldInt = Xyapper.Internal.TypeConverter.ToType<int>(record["FieldInt"]);
+		FieldString = Xyapper.Internal.TypeConverter.ToType<string>(record["FieldString"]);
+		FieldDateTime = Xyapper.Internal.TypeConverter.ToType<DateTime?>(record["FieldDateTime"]);
 	}
+}
 ```
 
 Too lazy even to declare a type? You're welcome!
 ```csharp
-	var dataTable = Connection.XGetDataTable(
-		"SELECT @FieldInt AS [FieldInt], @FieldString AS [FieldString], @FieldDateTime AS [FieldDateTime]",
-		new {FieldInt = 1, FieldString = "test", FieldDateTime = DateTime.Now});
+var dataTable = Connection.XGetDataTable(
+	"SELECT @FieldInt AS [FieldInt], @FieldString AS [FieldString], @FieldDateTime AS [FieldDateTime]",
+	new {FieldInt = 1, FieldString = "test", FieldDateTime = DateTime.Now});
 
-	var generatedCode = Xyapper.CodeGenerator.GenerateClassCode(dataTable, "MyClass");
+var generatedCode = Xyapper.CodeGenerator.GenerateClassCode(dataTable, "MyClass");
 ```

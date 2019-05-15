@@ -10,6 +10,7 @@
     <RepositoryUrl>https://github.com/drockso/Xyapper</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageProjectUrl>https://github.com/drockso/Xyapper</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>

@@ -8,12 +8,21 @@ using System.Linq;
 
 namespace Xyapper.Internal
 {
+    /// <summary>
+    /// Factory to create runtime deserializers for requested type
+    /// </summary>
     public static class DeserializerFactory
     {
         private static Dictionary<Type, object> Deserializers = new Dictionary<Type, object>();
 
         private static object LockObject = new object();
 
+        /// <summary>
+        /// Get or create a deserializer for requested type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dataReader"></param>
+        /// <returns></returns>
         public static Func<IDataRecord, T> GetDeserializer<T>(IDataReader dataReader) where T : new()
         {
             var requiredType = typeof(T);
@@ -25,7 +34,7 @@ namespace Xyapper.Internal
                     return (Func<IDataRecord, T>)Deserializers[requiredType];
                 }
 
-                Func<IDataRecord, T> newDeserializer = null;
+                Func<IDataRecord, T> newDeserializer;
                 if (requiredType.GetInterfaces().Contains(typeof(ICustomDeserialized)))
                 {
                     newDeserializer = CreateCustomDeserializer<T>(dataReader);
@@ -41,6 +50,12 @@ namespace Xyapper.Internal
             }
         }
 
+        /// <summary>
+        /// Geneaate expression with the deserializer
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dataReader"></param>
+        /// <returns></returns>
         private static Expression<Func<IDataRecord, T>> CreateExpression<T>(IDataReader dataReader) where T : new()
         {
             var returnType = typeof(T);
@@ -60,7 +75,7 @@ namespace Xyapper.Internal
                 var targetColumnName = mappingAttribute != null ? mappingAttribute.ColumnName : property.Name;
                 if (!readerColumns.Contains(targetColumnName)) continue;
 
-                var propertyExpression = Expression.Property(dataReaderParam, indexProperty, new Expression[] { Expression.Constant(targetColumnName) });
+                var propertyExpression = Expression.Property(dataReaderParam, indexProperty, Expression.Constant(targetColumnName));
 
                 var conditionalExpression = Expression.Condition(Expression.Equal(propertyExpression, Expression.Constant(DBNull.Value)), Expression.Constant(null), propertyExpression);
 
@@ -73,6 +88,12 @@ namespace Xyapper.Internal
             return Expression.Lambda<Func<IDataRecord, T>>(block, dataReaderParam);
         }
 
+        /// <summary>
+        /// Create a deserializer for ICustomDeserialized derived type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dataReader"></param>
+        /// <returns></returns>
         private static Func<IDataRecord, T> CreateCustomDeserializer<T>(IDataReader dataReader) where T : new()
         {
             Func<IDataRecord, T> deserializer = (record) => 

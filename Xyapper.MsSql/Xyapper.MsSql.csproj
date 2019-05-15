@@ -2,6 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Dmitry Popov</Authors>
+    <Company>DRockso Inc.</Company>
+    <Product>Xyapper.MsSql</Product>
+    <Description>MS Sql extension for Xyapper with T-SQL specific functions such as bulk copy and others</Description>
+    <Copyright>Dmitry Popov</Copyright>
+    <PackageProjectUrl>https://github.com/drockso/Xyapper</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/drockso/Xyapper</RepositoryUrl>
+    <RepositoryType>GitHub</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>

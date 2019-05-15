@@ -47,6 +47,12 @@ namespace Xyapper.MsSql.Internal
             return resulttype;
         }
 
+        /// <summary>
+        /// Convert System type to MsSql DB type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="exceptionIfCannotMap"></param>
+        /// <returns></returns>
         public static SqlDbType? GetSqlDbType(Type type, bool exceptionIfCannotMap)
         {
             try

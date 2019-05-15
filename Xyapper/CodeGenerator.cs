@@ -3,8 +3,18 @@ using System.Text;
 
 namespace Xyapper
 {
+    /// <summary>
+    /// Code genearator
+    /// </summary>
     public static class CodeGenerator
     {
+        /// <summary>
+        /// Create a class definition based on DataTable schema
+        /// </summary>
+        /// <param name="table">Input DataTable</param>
+        /// <param name="className">How to call a class</param>
+        /// <param name="generateReader">Generate a method to read data from specified DataTable</param>
+        /// <returns></returns>
         public static string GenerateClassCode(this DataTable table, string className = "MyClassName", bool generateReader = false)
         {
             var stringBuilder = new StringBuilder();

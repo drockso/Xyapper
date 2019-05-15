@@ -6,10 +6,24 @@ using Xyapper;
 
 namespace Xyapper.MsSql
 {
+    /// <summary>
+    /// Sql column definition
+    /// </summary>
     public class SqlColumn : ICustomDeserialized, IEquatable<SqlColumn>
     {
+        /// <summary>
+        /// Column name
+        /// </summary>
         public string ColumnName { get; set; }
+
+        /// <summary>
+        /// ColumnType
+        /// </summary>
         public SqlDbType ColumnType { get; set; }
+
+        /// <summary>
+        /// Size of column. -1 for MAX
+        /// </summary>
         public int ColumnSize { get; set; }
 
         public void Deserialize(IDataRecord record)
@@ -29,6 +43,11 @@ namespace Xyapper.MsSql
             return ColumnName == other.ColumnName;// && ColumnType == other.ColumnType;
         }
 
+        /// <summary>
+        /// For Unicode strings MsSql doubles size
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         private bool IsDoubleBytesType(SqlDbType type)
         {
             var types = new[] { SqlDbType.NChar, SqlDbType.NVarChar };

@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace Xyapper.Internal
 {
+    /// <summary>
+    /// Strongly typed DataTable schema description
+    /// </summary>
     public class SchemaItem
     {
         public string ColumnName { get; set; }

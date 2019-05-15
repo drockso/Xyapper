@@ -7,8 +7,19 @@ using Xyapper.Internal;
 
 namespace Xyapper
 {
+    /// <summary>
+    /// Xyapper main extensions
+    /// </summary>
     public static class Extensions
     {
+        /// <summary>
+        /// Get list of objects from database query
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="connection">DB Connection</param>
+        /// <param name="command">DB Command to execute</param>
+        /// <param name="transaction">Transaction to use</param>
+        /// <returns></returns>
         public static IEnumerable<T> XQuery<T>(this IDbConnection connection, IDbCommand command, IDbTransaction transaction = null) where T : new()
         {
             connection.OpenIfNot();
@@ -28,6 +39,15 @@ namespace Xyapper
             }
         }
 
+        /// <summary>
+        /// Get list of objects from database query
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="connection">DB Connection</param>
+        /// <param name="commandText">Plain command text</param>
+        /// <param name="parameterSet">Anonymous type object with parameters</param>
+        /// <param name="transaction">Transaction to use</param>
+        /// <returns></returns>
         public static IEnumerable<T> XQuery<T>(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null) where T : new()
         {
             using (var command = connection.CreateCommand())
@@ -45,6 +65,15 @@ namespace Xyapper
             }
         }
 
+        /// <summary>
+        /// Get list of objects from database stored procedure
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="connection">DB Connection</param>
+        /// <param name="procedureName">Stored procedure name</param>
+        /// <param name="parameterSet">Anonymous type object with parameters</param>
+        /// <param name="transaction">Transaction to use</param>
+        /// <returns></returns>
         public static IEnumerable<T> XQueryProcedure<T>(this IDbConnection connection, string procedureName, object parameterSet = null, IDbTransaction transaction = null) where T : new()
         {
             using (var command = connection.CreateCommand())
@@ -62,6 +91,13 @@ namespace Xyapper
             }
         }
 
+        /// <summary>
+        /// Execute command with no return data
+        /// </summary>
+        /// <param name="connection">DB Connection</param>
+        /// <param name="commandText">Plain command text</param>
+        /// <param name="parameterSet">Anonymous type object with parameters</param>
+        /// <param name="transaction">Transaction to use</param>
         public static void XExecuteNonQuery(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null)
         {
             connection.OpenIfNot();
@@ -82,7 +118,12 @@ namespace Xyapper
             }
         }
 
-
+        /// <summary>
+        /// Execute command with no return data
+        /// </summary>
+        /// <param name="connection">DB Connection</param>
+        /// <param name="command">DB Command to execute</param>
+        /// <param name="transaction">Transaction to use</param>
         public static void XExecuteNonQuery(this IDbConnection connection, IDbCommand command, IDbTransaction transaction = null)
         {
             connection.OpenIfNot();
@@ -93,7 +134,13 @@ namespace Xyapper
             command.ExecuteNonQuery();
         }
 
-
+        /// <summary>
+        /// Get DataTable from DB
+        /// </summary>
+        /// <param name="connection">DB Connection</param>
+        /// <param name="command">DB Command to execute</param>
+        /// <param name="transaction">Transaction to use</param>
+        /// <returns></returns>
         public static DataTable XGetDataTable(this IDbConnection connection, IDbCommand command, IDbTransaction transaction = null)
         {
             connection.OpenIfNot();
@@ -107,6 +154,14 @@ namespace Xyapper
             }
         }
 
+        /// <summary>
+        /// Get DataTable from DB
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="commandText">Plain command text</param>
+        /// <param name="parameterSet">Anonymous type object with parameters</param>
+        /// <param name="transaction">Transaction to use</param>
+        /// <returns></returns>
         public static DataTable XGetDataTable(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null)
         {
             connection.OpenIfNot();
@@ -129,6 +184,11 @@ namespace Xyapper
             }
         }
 
+        /// <summary>
+        /// Add parameters to command from anonymous type
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="parameterSet"></param>
         private static void AddParameters(IDbCommand command, object parameterSet)
         {
             if (parameterSet == null) return;
@@ -146,6 +206,11 @@ namespace Xyapper
             }
         }
 
+        /// <summary>
+        /// Read data to DataTable from IDataReader
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns></returns>
         private static DataTable ReadDataTable(IDataReader reader)
         {
             var schemaColumns = SchemaItem.FromDataTable(reader.GetSchemaTable());
@@ -164,6 +229,12 @@ namespace Xyapper
             return result;
         }
 
+        /// <summary>
+        /// Read a collections of arrays of objects from IDataReader
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="columns"></param>
+        /// <returns></returns>
         private static IEnumerable<object[]> ReadRowArray(IDataReader reader, int columns)
         {
             while (reader.Read())
@@ -174,7 +245,10 @@ namespace Xyapper
             }
         }
 
-       
+        /// <summary>
+        /// Open a connection of it is not open
+        /// </summary>
+        /// <param name="connection"></param>
         private static void OpenIfNot(this IDbConnection connection)
         {
             if (connection.State != ConnectionState.Open)
@@ -183,6 +257,10 @@ namespace Xyapper
             }
         }
 
+        /// <summary>
+        /// Log command to a logging provider
+        /// </summary>
+        /// <param name="command"></param>
         private static void LogCommand(IDbCommand command)
         {
             if (!XyapperManager.EnableLogging) return;
@@ -195,16 +273,6 @@ namespace Xyapper
                     message += $"\r\nPARAMETERS: \r\n{string.Join("\r\n", command.Parameters.Cast<IDbDataParameter>().Select(parameter => $"{parameter.ParameterName} = '{parameter.Value.ToString()}'"))}";
                 }
                 return message;
-            });
-        }
-
-        private static void LogException(Exception exception)
-        {
-            if (!XyapperManager.EnableLogging) return;
-
-            XyapperManager.Logger.Log<IDbCommand>(XyapperManager.ExceptionLogLevel, new EventId(), null, exception, (cmd, ex) =>
-            {
-                return $"Execution exception: {ex.Message}";
             });
         }
     }

@@ -11,6 +11,7 @@
     <PackageProjectUrl>https://github.com/drockso/Xyapper</PackageProjectUrl>
     <RepositoryUrl>https://github.com/drockso/Xyapper</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

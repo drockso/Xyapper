@@ -6,12 +6,14 @@
 trigger:
 - master
 
-pool:
-  vmImage: 'ubuntu-latest'
+pool: 'Hosted VS2017'
 
 variables:
   buildConfiguration: 'Release'
 
 steps:
-- script: dotnet build --configuration $(buildConfiguration)
+- script: dotnet build --configuration $(buildConfiguration) --output out
   displayName: 'dotnet build $(buildConfiguration)'
+
+- script: dotnet publish --configuration $(buildConfiguration)
+  displayName: 'dotnet publish $(buildConfiguration)'

@@ -2,6 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Dmitry Popov</Authors>
+    <Company>DRockso Inc.</Company>
+    <Description>A lightweight ORM wrapper</Description>
+    <Copyright>Dmitry Popov</Copyright>
+    <RepositoryUrl>https://github.com/drockso/Xyapper</RepositoryUrl>
+    <RepositoryType>GitHub</RepositoryType>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>

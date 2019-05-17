@@ -105,15 +105,9 @@ namespace Xyapper
             {
                 command.CommandType = CommandType.Text;
                 command.CommandText = commandText;
-                command.Transaction = transaction;
-
                 AddParameters(command, parameterSet);
 
-                command.Connection = connection;
-
-                LogCommand(command);
-
-                command.ExecuteNonQuery();
+                connection.XExecuteNonQuery(command, transaction);
             }
         }
 

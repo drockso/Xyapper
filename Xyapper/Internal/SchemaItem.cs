@@ -11,7 +11,7 @@ namespace Xyapper.Internal
     {
         public string ColumnName { get; set; }
         public int? ColumnOrdinal { get; set; }
-        public int? ColumnSize { get; set; }
+        public long? ColumnSize { get; set; }
         public int? NumericPrecision { get; set; }
         public int? NumericScale { get; set; }
         public bool? IsUnique { get; set; }
@@ -26,7 +26,7 @@ namespace Xyapper.Internal
         public int? ProviderType { get; set; }
         public bool? IsAliased { get; set; }
         public bool? IsExpression { get; set; }
-        public bool? IsIdentity { get; set; }
+        //public bool? IsIdentity { get; set; }
         public bool? IsAutoIncrement { get; set; }
         public bool? IsRowVersion { get; set; }
         public bool? IsHidden { get; set; }
@@ -57,7 +57,7 @@ namespace Xyapper.Internal
             result.ProviderType = row["ProviderType"].ToType<int?>();
             result.IsAliased = row["IsAliased"].ToType<bool?>();
             result.IsExpression = row["IsExpression"].ToType<bool?>();
-            result.IsIdentity = row["IsIdentity"].ToType<bool?>();
+            //result.IsIdentity = row["IsIdentity"].ToType<bool?>();
             result.IsAutoIncrement = row["IsAutoIncrement"].ToType<bool?>();
             result.IsRowVersion = row["IsRowVersion"].ToType<bool?>();
             result.IsHidden = row["IsHidden"].ToType<bool?>();

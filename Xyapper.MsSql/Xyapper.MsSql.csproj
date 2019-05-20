@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	<PackageReadmeFile>XyapperMsSqlReadme.md</PackageReadmeFile>
     <Authors>Dmitry Popov</Authors>
     <Company>DRockso Inc.</Company>
     <Product>Xyapper.MsSql</Product>
@@ -24,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Xyapper\Xyapper.csproj" />
+	<None Include="..\Xyapper.MsSql\XyapperMsSqlReadme.md" Pack="true" PackagePath=""/>
   </ItemGroup>
 
 </Project>

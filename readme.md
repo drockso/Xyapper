@@ -17,6 +17,6 @@ A lightweight ORM wrapper for ADO.NET providers
 
 **Legacy friendly.** Yes, DataTables are also supported.
 
-[Xyapper documentation](../Xyapper)
+[Xyapper documentation](Xyapper)
 
-[Xyapper.MsSql documentation](../Xyapper.MsSql)
+[Xyapper.MsSql documentation](Xyapper.MsSql)

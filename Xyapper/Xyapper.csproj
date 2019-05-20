@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	<PackageReadmeFile>XyapperReadme.md</PackageReadmeFile>
+	<PackageReadmeFile>readme.md</PackageReadmeFile>
     <Authors>Dmitry Popov</Authors>
     <Company>DRockso Inc.</Company>
     <Description>A lightweight ORM wrapper. Inspired by Dapper, but made more compact.
@@ -14,14 +14,14 @@ Supports MS SQL, Postgres, Oracle, SQLite, SQL CE and any other DB with ADO.NET 
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageProjectUrl>https://github.com/drockso/Xyapper</PackageProjectUrl>
     <Version>1.0.4</Version>
-    <PackageLicenseUrl>https://github.com/drockso/Xyapper/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>sql, orm, micro-orm, dapper, ado.net</PackageTags>
     <NeutralLanguage />
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
-	<None Include="..\Xyapper\XyapperReadme.md" Pack="true" PackagePath=""/>
+	<None Include="..\Xyapper\readme.md" Pack="true" PackagePath=""/>
   </ItemGroup>
 
 </Project>

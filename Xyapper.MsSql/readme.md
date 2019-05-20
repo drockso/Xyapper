@@ -54,4 +54,3 @@ Add a column to table
 ```csharp
 Connection.XAddColumn("MyTableName", new SqlColumn() {ColumnName = "NewColumn", ColumnType = SqlDbType.Int});
 ```
-

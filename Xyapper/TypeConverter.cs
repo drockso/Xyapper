@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Globalization;
 using System.Linq;
 
-namespace Xyapper.Internal
+namespace Xyapper
 {
     public static class TypeConverter
     {
@@ -48,6 +46,22 @@ namespace Xyapper.Internal
                 return true;
 
             var type = typeof(T);
+            if (!type.IsValueType)
+                return true;
+
+            if (Nullable.GetUnderlyingType(type) != null)
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Check if object is nullable
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static bool IsNullable(Type type)
+        {
             if (!type.IsValueType)
                 return true;
 

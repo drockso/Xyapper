@@ -16,9 +16,9 @@ namespace Xyapper.Benchmark
 
         public void Deserialize(IDataRecord record)
         {
-            FieldInt = Xyapper.Internal.TypeConverter.ToType<int>(record["FieldInt"]);
-            FieldString = Xyapper.Internal.TypeConverter.ToType<string>(record["FieldString"]);
-            FieldDateTime = Xyapper.Internal.TypeConverter.ToType<DateTime?>(record["FieldDateTime"]);
+            FieldInt = TypeConverter.ToType<int>(record["FieldInt"]);
+            FieldString = TypeConverter.ToType<string>(record["FieldString"]);
+            FieldDateTime = TypeConverter.ToType<DateTime?>(record["FieldDateTime"]);
         }
     }
 }

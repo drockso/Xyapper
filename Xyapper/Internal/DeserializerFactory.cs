@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Data;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -13,9 +12,9 @@ namespace Xyapper.Internal
     /// </summary>
     public static class DeserializerFactory
     {
-        private static Dictionary<Type, object> Deserializers = new Dictionary<Type, object>();
+        private static readonly Dictionary<Type, object> Deserializers = new Dictionary<Type, object>();
 
-        private static object LockObject = new object();
+        private static readonly object LockObject = new object();
 
         /// <summary>
         /// Get or create a deserializer for requested type
@@ -34,15 +33,9 @@ namespace Xyapper.Internal
                     return (Func<IDataRecord, T>)Deserializers[requiredType];
                 }
 
-                Func<IDataRecord, T> newDeserializer;
-                if (requiredType.GetInterfaces().Contains(typeof(ICustomDeserialized)))
-                {
-                    newDeserializer = CreateCustomDeserializer<T>(dataReader);
-                }
-                else
-                {
-                    newDeserializer = CreateExpression<T>(dataReader).Compile();
-                }
+                var newDeserializer = requiredType.GetInterfaces().Contains(typeof(ICustomDeserialized)) ? 
+                    CreateCustomDeserializer<T>() : 
+                    CreateExpression<T>(dataReader).Compile();
              
                 Deserializers.Add(requiredType, newDeserializer);
 
@@ -60,7 +53,12 @@ namespace Xyapper.Internal
         {
             var returnType = typeof(T);
             var dataReaderParam = Expression.Parameter(typeof(IDataRecord), "dataReader");
+
             var indexProperty = typeof(IDataRecord).GetProperty("Item", new[] { typeof(string) });
+            if (indexProperty == null)
+            {
+                throw new XyapperException("Failed to get [] property for IDataRecord. Very strange...");
+            }
 
             var readerColumns = SchemaItem.GetSchemas(dataReader).Select(column => column.ColumnName).ToArray();
 
@@ -84,7 +82,7 @@ namespace Xyapper.Internal
                 assignments.Add(Expression.Bind(property, convertExpression));
             }
         
-            var block = Expression.MemberInit(constructor, assignments.ToArray());
+            var block = Expression.MemberInit(constructor, assignments.Cast<MemberBinding>().ToArray());
             return Expression.Lambda<Func<IDataRecord, T>>(block, dataReaderParam);
         }
 
@@ -92,18 +90,22 @@ namespace Xyapper.Internal
         /// Create a deserializer for ICustomDeserialized derived type
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="dataReader"></param>
         /// <returns></returns>
-        private static Func<IDataRecord, T> CreateCustomDeserializer<T>(IDataReader dataReader) where T : new()
+        private static Func<IDataRecord, T> CreateCustomDeserializer<T>() where T : new()
         {
-            Func<IDataRecord, T> deserializer = (record) => 
+            if (typeof(T).GetProperties().Any(prop => prop.GetCustomAttribute<ColumnMappingAttribute>() != null))
+            {
+                throw new XyapperException("The ICustomDeserialized class cannot contain [ColumnMapping] attribute!");
+            }
+
+            T Deserializer(IDataRecord record)
             {
                 var newItem = new T();
                 ((ICustomDeserialized) newItem).Deserialize(record);
                 return newItem;
-            };
+            }
 
-            return deserializer;
+            return Deserializer;
         }
     }
 }

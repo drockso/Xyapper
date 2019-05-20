@@ -6,13 +6,13 @@
     <Authors>Dmitry Popov</Authors>
     <Company>DRockso Inc.</Company>
     <Description>A lightweight ORM wrapper. Inspired by Dapper, but made more compact.
-Supports MS SQL, Postrges, Oracle, SQLite, SQL CE and any other DB with ADO.NET provider.</Description>
+Supports MS SQL, Postgres, Oracle, SQLite, SQL CE and any other DB with ADO.NET provider.</Description>
     <Copyright>Dmitry Popov</Copyright>
     <RepositoryUrl>https://github.com/drockso/Xyapper</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageProjectUrl>https://github.com/drockso/Xyapper</PackageProjectUrl>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
     <PackageLicenseUrl>https://github.com/drockso/Xyapper/blob/master/LICENSE</PackageLicenseUrl>
     <PackageTags>sql, orm, micro-orm, dapper, ado.net</PackageTags>
     <NeutralLanguage />

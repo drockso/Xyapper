@@ -79,6 +79,8 @@ var myResult = Connection.XQuery<MyClass>(
 
 Want to deserialize a type manually? No problem!
 ```csharp
+using Xyapper;
+
 public class MyClass : ICustomDeserialized
 {
 	public int FieldInt { get; set; }
@@ -89,20 +91,16 @@ public class MyClass : ICustomDeserialized
 
 	public void Deserialize(IDataRecord record)
 	{
-		FieldInt = Xyapper.Internal.TypeConverter.ToType<int>(record["FieldInt"]);
-		FieldString = Xyapper.Internal.TypeConverter.ToType<string>(record["FieldString"]);
-		FieldDateTime = Xyapper.Internal.TypeConverter.ToType<DateTime?>(record["FieldDateTime"]);
+		FieldInt = record["FieldInt"].ToType<int>();
+		FieldString = record["FieldString"].ToType<string>();
+		FieldDateTime = record["FieldDateTime"].ToType<DateTime?>();
 	}
 }
 ```
 
 Too lazy even to declare a type? You're welcome!
 ```csharp
-var dataTable = Connection.XGetDataTable(
-	"SELECT @FieldInt AS [FieldInt], @FieldString AS [FieldString], @FieldDateTime AS [FieldDateTime]",
-	new {FieldInt = 1, FieldString = "test", FieldDateTime = DateTime.Now});
-
-var generatedCode = Xyapper.CodeGenerator.GenerateClassCode(dataTable, "MyClass");
+var code = Connection.XGenerateClassCode(@"SELECT * FROM [dbo].[MyTable]", null, "MyClass");
 ```
 
 # Xyapper.MsSql

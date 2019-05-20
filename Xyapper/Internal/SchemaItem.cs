@@ -22,7 +22,7 @@ namespace Xyapper.Internal
         public string BaseSchemaName { get; set; }
         public string BaseTableName { get; set; }
         public Type DataType { get; set; }
-        public bool? AllowDBNull { get; set; }
+        public bool? AllowDbNull { get; set; }
         public int? ProviderType { get; set; }
         public bool? IsAliased { get; set; }
         public bool? IsExpression { get; set; }
@@ -53,7 +53,7 @@ namespace Xyapper.Internal
             result.BaseSchemaName = row["BaseSchemaName"].ToType<string>();
             result.BaseTableName = row["BaseTableName"].ToType<string>();
             result.DataType = Type.GetType(row["DataType"].ToString());
-            result.AllowDBNull = row["AllowDBNull"].ToType<bool?>();
+            result.AllowDbNull = row["AllowDBNull"].ToType<bool?>();
             result.ProviderType = row["ProviderType"].ToType<int?>();
             result.IsAliased = row["IsAliased"].ToType<bool?>();
             result.IsExpression = row["IsExpression"].ToType<bool?>();

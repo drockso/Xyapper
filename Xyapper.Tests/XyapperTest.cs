@@ -158,4 +158,32 @@ public class XyapperTest
     {
         Connection.XExecuteNonQuery("SELECT @Value", new {Value = 1});   
     }
+
+    [TestMethod]
+    public void TestXGenerateClassCode()
+    {
+        var command = @"SELECT 
+                            1 AS ColumnInt,
+                            'test' AS ColumnString,
+                            CAST('2019-01-01' AS DateTime) AS ColumnDate,
+                            NULL AS ColumnDateNull,
+                            0.03 AS ColumnDouble,
+                            2 AS ColumnInt2";
+
+        var code = Connection.XGenerateClassCode(command, null, "MyClass", true);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(XyapperException), "The ICustomDeserialized class cannot contain [ColumnMapping] attribute!")]
+    public void TestICustomDeseriazed()
+    {
+        var result = Connection.XQuery<TestType2>("SELECT 1 AS FieldInt").ToArray();
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(Exception), "Custom deserializer invoked")]
+    public void TestICustomDeseriazed2()
+    {
+        var result = Connection.XQuery<TestType3>("SELECT 1 AS FieldInt").ToArray();
+    }
 }

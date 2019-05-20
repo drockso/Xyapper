@@ -249,6 +249,91 @@ namespace Xyapper
             }
         }
 
+        /// <summary>
+        /// Get schema info for specified command
+        /// </summary>
+        /// <param name="connection">DB Connection</param>
+        /// <param name="command">DB Command to execute</param>
+        /// <param name="transaction">Transaction to use</param>
+        /// <returns></returns>
+        public static SchemaItem[] XGetSchema(this IDbConnection connection, IDbCommand command, IDbTransaction transaction)
+        {
+            connection.OpenIfNot();
+            command.Connection = connection;
+            command.Transaction = transaction;
+
+            LogCommand(command);
+
+            using (var reader = command.ExecuteReader())
+            {
+                var schemaColumns = SchemaItem.FromDataTable(reader.GetSchemaTable());
+                return schemaColumns;
+            }
+        }
+
+        /// <summary>
+        /// Get schema info for specified command
+        /// </summary>
+        /// <param name="connection">DB Connection</param>
+        /// <param name="commandText">Plain command text</param>
+        /// <param name="parameterSet">Anonymous type object with parameters</param>
+        /// <param name="transaction">Transaction to use</param>
+        /// <returns></returns>
+        public static SchemaItem[] XGetSchema(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null)
+        {
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandType = CommandType.Text;
+                command.CommandText = commandText;
+                AddParameters(command, parameterSet);
+
+                return connection.XGetSchema(command, transaction);
+            }
+        }
+
+        /// <summary>
+        /// Create a class from DB table result
+        /// </summary>
+        /// <param name="connection">DB Connection</param>
+        /// <param name="command">DB Command to execute</param>
+        /// <param name="transaction">Transaction to use</param>
+        /// <param name="className">How to name a new class</param>
+        /// <param name="generateCustomDeserializer">Make a class ICustomDeserialized</param>
+        /// <returns></returns>
+        public static string XGenerateClassCode(
+            this IDbConnection connection, 
+            IDbCommand command, 
+            string className = "MyClassName", 
+            bool generateCustomDeserializer = false, 
+            IDbTransaction transaction = null)
+        {
+            var schema = connection.XGetSchema(command, transaction);
+            return CodeGenerator.GenerateClassCode(schema, className, generateCustomDeserializer);
+        }
+
+        /// <summary>
+        /// Create a class from DB table result
+        /// </summary>
+        /// <param name="connection">DB Connection</param>
+        /// <param name="commandText">Plain command text</param>
+        /// <param name="parameterSet">Anonymous type object with parameters</param>
+        /// <param name="className">How to name a new class</param>
+        /// <param name="generateCustomDeserializer">Make a class ICustomDeserialized</param>
+        /// <param name="transaction">Transaction to use</param>
+        /// <returns></returns>
+        public static string XGenerateClassCode(this IDbConnection connection, string commandText,
+            object parameterSet = null, string className = "MyClassName", bool generateCustomDeserializer = false,
+            IDbTransaction transaction = null)
+        {
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandType = CommandType.Text;
+                command.CommandText = commandText;
+                AddParameters(command, parameterSet);
+
+                return connection.XGenerateClassCode(command, className, generateCustomDeserializer, transaction);
+            }
+        }
 
         /// <summary>
         /// Add parameters to command from anonymous type

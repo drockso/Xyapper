@@ -12,9 +12,10 @@
     <PackageProjectUrl>https://github.com/drockso/Xyapper</PackageProjectUrl>
     <RepositoryUrl>https://github.com/drockso/Xyapper</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
-    <Version>1.0.4</Version>
+    <Version>1.0.5</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>T-Sql, bulkcopy, orm, dapper</PackageTags>
+	<PackageIcon>Xyapper.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Xyapper\Xyapper.csproj" />
 	<None Include="..\Xyapper.MsSql\readme.md" Pack="true" PackagePath="" />
+	<None Include="..\Xyapper.MsSql\Xyapper.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>

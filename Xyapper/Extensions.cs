@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -196,11 +197,7 @@ namespace Xyapper
 
             command.Log();
 
-            using (var reader = command.ExecuteReader())
-            {
-                reader.Read();
-                return reader[0].ToType<T>();
-            }
+            return command.ExecuteScalar().ToType<T>();
         }
 
         /// <summary>
@@ -315,7 +312,7 @@ namespace Xyapper
 
                 parameter.ParameterName = field.Name;
                 parameter.Value = field.GetValue(parameterSet);
-
+               
                 command.Parameters.Add(parameter);
             }
         }

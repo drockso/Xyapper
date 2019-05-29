@@ -16,6 +16,44 @@ using Xyapper.MsSql;
 
 namespace Xyapper.Benchmark
 {
+    // Nested deserialization is under development. Will be introduced in 1.1.0
+
+    //[NestedMapping(0)]
+    //class MyClass
+    //{
+    //    public int MyClassId { get; set; }
+    //    public  string Text { get; set; }
+
+    //    public  MyClass2 Class2 { get; set; }
+
+    //    public List<MyClass3> Class3 { get; set; }
+    //}
+
+    //[NestedMapping(1, "MyClassId")]
+    //class MyClass2
+    //{
+    //    public int MyClassId { get; set; }
+    //    public string Text { get; set; }
+
+    //}
+
+    //[NestedMapping(2, "MyClassId")]
+    //class MyClass3
+    //{
+    //    public int MyClassId { get; set; }
+    //    public int MyClass3Id { get; set; }
+    //    public string Text { get; set; }
+    //    public List<MyClass4> Class4 { get; set; }
+    //}
+
+    //[NestedMapping(3, "MyClass3Id")]
+    //class MyClass4
+    //{
+    //    public int MyClass3Id { get; set; }
+    //    public string Text { get; set; }
+    //}
+
+
     static class Program
     {
         private static SQLiteConnection Connection => new SQLiteConnection($"Data Source={SQLiteDbPath};");
@@ -23,10 +61,28 @@ namespace Xyapper.Benchmark
 
         static void Main(string[] args)
         {
+            XyapperManager.EnableLogging = true;
+            XyapperManager.Logger = new NLog.Extensions.Logging.NLogLoggerFactory().CreateLogger("Xyapper");
+            XyapperManager.CommandLogLevel = LogLevel.Information;
+            XyapperManager.ExceptionLogLevel = LogLevel.Error;
+
+            XyapperManager.TrimStrings = true; //Trim all strings retrieved from DB
+            XyapperManager.UseAdvancedTypeConversions = true; //Use automatic explicit type conversions
+
+
             Console.WriteLine("Xyapper vs Dapper benchmark");
 
             Console.WriteLine("Creating test SQLite DB...");
             CreateDb();
+
+
+            //Connection.XQueryNested<MyClass>(@"
+            //    SELECT 1 AS MyClassId, 'test1' AS Text;
+            //    SELECT 1 AS MyClassId, 'test2' AS Text;
+            //    SELECT 1 AS MyClassId, 1 AS MyClass3Id, 'test31' AS Text UNION SELECT 1 AS MyClassId, 2 AS MyClass3Id, 'test32' AS Text;
+            //    SELECT 1 AS MyClass3Id, 'test4' AS Text;
+
+            //");
 
             Console.WriteLine("Populating test DB...");
             PopulateDb();

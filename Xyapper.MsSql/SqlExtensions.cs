@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -77,7 +76,6 @@ namespace Xyapper.MsSql
             builder.Append("\r\n)\r\n");
 
             var sqlCommandText = builder.ToString();
-            var xx = (IDbTransaction)transaction;
             sqlConnection.XExecuteNonQuery(sqlCommandText, null, transaction);
         }
 
@@ -91,15 +89,7 @@ namespace Xyapper.MsSql
         /// <param name="transaction"></param>
         public static void XDropTable(this SqlConnection sqlConnection, string tableName, string schema = "dbo", bool isTempTable = false, SqlTransaction transaction = null)
         {
-            var sqlCommandText = "";
-            if (isTempTable)
-            {
-                sqlCommandText = $"DROP TABLE [tempdb]..[{tableName}]";
-            }
-            else
-            {
-                sqlCommandText = $"DROP TABLE [{schema}].[{tableName}]";
-            }
+            var sqlCommandText = isTempTable ? $"DROP TABLE [tempdb]..[{tableName}]" : $"DROP TABLE [{schema}].[{tableName}]";
 
             sqlConnection.XExecuteNonQuery(sqlCommandText, null, transaction);
         }
@@ -151,7 +141,6 @@ namespace Xyapper.MsSql
         /// <summary>
         /// Bulk copy list of objects to DB
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="sqlConnection">SQL Connection</param>
         /// <param name="tableName">Target table name</param>
         /// <param name="dataTable">DataTable to copy</param>
@@ -192,18 +181,19 @@ namespace Xyapper.MsSql
                 var existingColumns = sqlConnection.XGetColumns(tableName, schema, myTransaction).ToList();
                 var tableCreatedRightNow = false;
 
+                var sqlColumns = tableColumns as SqlColumn[] ?? tableColumns.ToArray();
                 if (createTableIfNotExists)
                 {
                     if(!existingColumns.Any())
                     {
-                        sqlConnection.XCreateTable(tableName, tableColumns, schema, myTransaction);
+                        sqlConnection.XCreateTable(tableName, sqlColumns, schema, myTransaction);
                         tableCreatedRightNow = true;
                     }
                 }
 
                 if(addColumnsIfNotExist && !tableCreatedRightNow)
                 {
-                    var requiredColumns = tableColumns.Where(column => !existingColumns.Contains(column));
+                    var requiredColumns = sqlColumns.Where(column => !existingColumns.Contains(column));
                     foreach(var column in requiredColumns)
                     {
                         sqlConnection.XAddColumn(tableName, column, schema, myTransaction);
@@ -214,7 +204,7 @@ namespace Xyapper.MsSql
                 {
                     bulkCopy.DestinationTableName = $"[{schema}].[{tableName}]";
 
-                    foreach (var column in tableColumns)
+                    foreach (var column in sqlColumns)
                     {
                         bulkCopy.ColumnMappings.Add(column.ColumnName, column.ColumnName);
                     }
@@ -243,23 +233,26 @@ namespace Xyapper.MsSql
         {
             if (XyapperManager.EnableLogging)
             {
-                XyapperManager.Logger.Log<SqlBulkCopy>(
-                XyapperManager.CommandLogLevel,
-                new Microsoft.Extensions.Logging.EventId(),
-                sqlBulkCopy,
-                null,
-                (bulk, ex) =>
-                {
-                    var message = $"SqlBulkCopy: destination table {sqlBulkCopy.DestinationTableName}, row count {itemCount}.\r\nSqlBulkCopy Mapping:\r\n" +
-                    string.Join(",\r\n", sqlBulkCopy.ColumnMappings.Cast<SqlBulkCopyColumnMapping>().Select(mapping => $"[{mapping.SourceColumn}] -> [{mapping.DestinationColumn}]"));
+                XyapperManager.Logger.Log(
+                    XyapperManager.CommandLogLevel,
+                    new Microsoft.Extensions.Logging.EventId(),
+                    sqlBulkCopy,
+                    null,
+                    (bulk, ex) =>
+                    {
+                        var message =
+                            $"SqlBulkCopy: destination table {sqlBulkCopy.DestinationTableName}, row count {itemCount}.\r\nSqlBulkCopy Mapping:\r\n" +
+                            string.Join(",\r\n",
+                                sqlBulkCopy.ColumnMappings.Cast<SqlBulkCopyColumnMapping>().Select(mapping =>
+                                    $"[{mapping.SourceColumn}] -> [{mapping.DestinationColumn}]"));
 
-                    return message;
-                });
+                        return message;
+                    });
             }
         }
 
         /// <summary>
-        /// Returns true if SQL Type requires size defintion (for example VARCHAR(100))
+        /// Returns true if SQL Type requires size definition (for example VARCHAR(100))
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>

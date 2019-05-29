@@ -35,7 +35,15 @@ namespace Xyapper.Internal
                     }
                     columnMapping.Add(property.Name, targetColumnName);
 
-                    var targetType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+                    Type targetType;
+                    if (property.PropertyType.IsEnum)
+                    {
+                        targetType = typeof(string);
+                    }
+                    else
+                    {
+                        targetType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+                    }
 
                     result.Columns.Add(targetColumnName, targetType);
                 }
@@ -53,7 +61,16 @@ namespace Xyapper.Internal
                 {
                     if (columnMapping.ContainsKey(property.Name))
                     {
-                        newRow[columnMapping[property.Name]] = property.GetValue(dataItem) ?? DBNull.Value;
+                        if (property.PropertyType.IsEnum)
+                        {
+                            newRow[columnMapping[property.Name]] =
+                                Enum.GetName(property.PropertyType, property.GetValue(dataItem));
+                        }
+                        else
+                        {
+                            newRow[columnMapping[property.Name]] = property.GetValue(dataItem) ?? DBNull.Value;
+                        }
+                        
                     }
                 }
                 result.Rows.Add(newRow);
@@ -64,7 +81,7 @@ namespace Xyapper.Internal
 
         private static bool IsMappableToColumn(PropertyInfo property)
         {
-            return property.PropertyType.Namespace == "System";
+            return property.PropertyType.Namespace == "System" || property.PropertyType.IsEnum;
         }
     }
 }

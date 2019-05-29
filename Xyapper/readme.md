@@ -38,6 +38,12 @@ XyapperManager.CommandLogLevel = LogLevel.Trace;
 XyapperManager.ExceptionLogLevel = LogLevel.Error;
 ```
 
+Set Xyapper settings
+```csharp
+XyapperManager.TrimStrings = true; //Trim all strings retrieved from DB
+XyapperManager.UseAdvancedTypeConversions = true; //Use automatic explicit type conversions (supports enums, date strings, etc.)
+```
+
 Select a single value from database
 ```csharp
 int? result = Connection.XQueryScalar<int?>("SELECT @value", new {Value = 1});
@@ -101,4 +107,19 @@ public class MyClass : ICustomDeserialized
 Too lazy even to declare a type? You're welcome!
 ```csharp
 var code = Connection.XGenerateClassCode(@"SELECT * FROM [dbo].[MyTable]", null, "MyClass");
+```
+
+Get a DataTable
+```csharp
+var dataTable = Connection.XGetDataTable("SELECT * FROM myTable");
+```
+
+Get a DataSet from a multi-statement
+```csharp
+var dataSet = Connection.XGetDataSet("SELECT * FROM myTable1; SELECT * FROM myTable2; SELECT * FROM myTable3;");
+```
+
+Or get a DataSet from a multi-statement stored procedure
+```csharp
+var dataSet = Connection.XGetDataSet("[dbo].[pGetData]", new {A = 1, B = 2}, CommandType.StoredProcedure);
 ```

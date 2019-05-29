@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Xyapper
@@ -16,7 +17,7 @@ namespace Xyapper
         public static ILogger Logger { get; set; }
 
         /// <summary>
-        /// Enable logging for all commands exected via Xyapper
+        /// Enable logging for all commands executed via Xyapper
         /// </summary>
         public static bool EnableLogging { get; set; }
 
@@ -29,5 +30,20 @@ namespace Xyapper
         /// Log level for errors
         /// </summary>
         public static LogLevel ExceptionLogLevel { get; set; } = LogLevel.Error;
+
+        /// <summary>
+        /// Format provider for conversions
+        /// </summary>
+        public static IFormatProvider FormatProvider { get; set; } = CultureInfo.InvariantCulture;
+
+        /// <summary>
+        /// Use more flexible type conversions. If enabled, Xyapper works a little bit slower
+        /// </summary>
+        public static bool UseAdvancedTypeConversions { get; set; } = true;
+
+        /// <summary>
+        /// Trim all strings from DB. UseAdvancedTypeConversions must be set to true
+        /// </summary>
+        public static bool TrimStrings { get; set; } = true;
     }
 }

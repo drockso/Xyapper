@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
@@ -18,20 +19,54 @@ namespace Xyapper
             if (formatProvider == null) formatProvider = CultureInfo.InvariantCulture;
 
             var field = default(T);
-            bool isNullableType = IsNullable(field);
+            var isNullableType = IsNullable(field);
             if (isNullableType)
             {
                 if (value == DBNull.Value) field = default(T);
                 else
                 {
                     var baseType = typeof(T).GetGenericArguments().Any() ? typeof(T).GetGenericArguments()[0] : typeof(T);
-                    field = (T)Convert.ChangeType(value, baseType, formatProvider);
+                    field = (T)ChangeType(value, baseType, formatProvider);
                 }
                 return field;
             }
 
-            field = (T)Convert.ChangeType(value, typeof(T), formatProvider);
+            field = (T)ChangeType(value, typeof(T), formatProvider);
             return field;
+        }
+
+        /// <summary>
+        /// Advanced conversions
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="targetType"></param>
+        /// <param name="formatProvider"></param>
+        /// <returns></returns>
+        private static object ChangeType(object value, Type targetType, IFormatProvider formatProvider)
+        {
+            if (targetType.IsEnum)
+            {
+                return Enum.Parse(targetType, value.ToString());
+            }
+
+            if (value is long l && targetType == typeof(DateTime))
+            {
+                return new DateTime(l);
+            }
+
+            if (value is string && targetType == typeof(bool))
+            {
+                if (value.ToString().ToLower().Trim() == "y") return true;
+                if (value.ToString().ToLower().Trim() == "n") return false;
+                throw new XyapperException($"Failed to convert string '{value}' to boolean!");
+            }
+
+            if (XyapperManager.TrimStrings && targetType == typeof(string))
+            {
+                return value.ToString().Trim();
+            }
+
+            return Convert.ChangeType(value, targetType, formatProvider);
         }
 
         /// <summary>

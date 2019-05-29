@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Linq;
@@ -75,11 +76,23 @@ namespace Xyapper.Internal
 
                 var propertyExpression = Expression.Property(dataReaderParam, indexProperty, Expression.Constant(targetColumnName));
 
-                var conditionalExpression = Expression.Condition(Expression.Equal(propertyExpression, Expression.Constant(DBNull.Value)), Expression.Constant(null), propertyExpression);
+                Expression valueExpression;
+                if (XyapperManager.UseAdvancedTypeConversions)
+                {
+                    var methodInfo = typeof(TypeConverter)
+                        .GetMethod(nameof(TypeConverter.ToType), BindingFlags.Public | BindingFlags.Static)
+                        ?.MakeGenericMethod(property.PropertyType);
 
-                var convertExpression = Expression.Convert(conditionalExpression, property.PropertyType);
+                    valueExpression = Expression.Call(methodInfo ?? throw new XyapperException("Failed to get method ToType<>!"), propertyExpression,
+                        Expression.Constant(CultureInfo.InvariantCulture));
+                }
+                else
+                {
+                    var conditionalExpression = Expression.Condition(Expression.Equal(propertyExpression, Expression.Constant(DBNull.Value)), Expression.Constant(null), propertyExpression);
+                    valueExpression = Expression.Convert(conditionalExpression, property.PropertyType);
+                }
 
-                assignments.Add(Expression.Bind(property, convertExpression));
+                assignments.Add(Expression.Bind(property, valueExpression));
             }
         
             var block = Expression.MemberInit(constructor, assignments.Cast<MemberBinding>().ToArray());

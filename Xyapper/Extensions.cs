@@ -50,7 +50,7 @@ namespace Xyapper
         /// <returns></returns>
         public static IEnumerable<T> XQuery<T>(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null) where T : new()
         {
-            using (var command = connection.PrepareCommand(commandText, parameterSet))
+            using (var command = connection.CreateCommandWithParameters(commandText, parameterSet))
             {
                 foreach(var item in connection.XQuery<T>(command, transaction))
                 {
@@ -94,7 +94,7 @@ namespace Xyapper
         /// <param name="transaction">Transaction to use</param>
         public static void XExecuteNonQuery(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null)
         {
-            using (var command = connection.PrepareCommand(commandText, parameterSet))
+            using (var command = connection.CreateCommandWithParameters(commandText, parameterSet))
             {
                 connection.XExecuteNonQuery(command, transaction);
             }
@@ -148,9 +148,54 @@ namespace Xyapper
         /// <returns></returns>
         public static DataTable XGetDataTable(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null)
         {
-            using (var command = connection.PrepareCommand(commandText, parameterSet))
+            using (var command = connection.CreateCommandWithParameters(commandText, parameterSet))
             {
                 return connection.XGetDataTable(command, transaction);
+            }
+        }
+
+        /// <summary>
+        /// Get a DataSet from multi-statement query
+        /// </summary>
+        /// <param name="connection">DB Connection</param>
+        /// <param name="command">DB Command to execute</param>
+        /// <param name="transaction">Transaction to use</param>
+        /// <returns></returns>
+        public static DataSet XGetDataSet(this IDbConnection connection, IDbCommand command, IDbTransaction transaction = null)
+        {
+            connection.OpenIfNot();
+            command.Connection = connection;
+            command.Transaction = transaction;
+
+            command.Log();
+            
+            var result = new DataSet();
+
+            using (var reader = command.ExecuteReader())
+            {
+                do
+                {
+                    result.Tables.Add(ReadDataTable(reader));
+                } while (reader.NextResult());
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get a DataSet from multi-statement query
+        /// </summary>
+        /// <param name="commandText">Plain command text</param>
+        /// <param name="parameterSet">Anonymous type object with parameters</param>
+        /// <param name="transaction">Transaction to use</param>
+        /// <param name="commandType">Query or stored procedure</param>
+        /// <returns></returns>
+        public static DataSet XGetDataSet(this IDbConnection connection, string commandText, object parameterSet = null, CommandType commandType = CommandType.Text, IDbTransaction transaction = null)
+        {
+            using (var command = connection.CreateCommandWithParameters(commandText, parameterSet))
+            {
+                command.CommandType = commandType;
+                return connection.XGetDataSet(command, transaction);
             }
         }
 
@@ -211,7 +256,7 @@ namespace Xyapper
         /// <returns></returns>
         public static T XQueryScalar<T>(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null)
         {
-            using (var command = connection.PrepareCommand(commandText, parameterSet))
+            using (var command = connection.CreateCommandWithParameters(commandText, parameterSet))
             {
                 return connection.XQueryScalar<T>(command, transaction);
             }
@@ -249,7 +294,7 @@ namespace Xyapper
         /// <returns></returns>
         public static SchemaItem[] XGetSchema(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null)
         {
-            using (var command = connection.PrepareCommand(commandText, parameterSet))
+            using (var command = connection.CreateCommandWithParameters(commandText, parameterSet))
             {
                 return connection.XGetSchema(command, transaction);
             }
@@ -289,18 +334,41 @@ namespace Xyapper
             object parameterSet = null, string className = "MyClassName", bool generateCustomDeserializer = false,
             IDbTransaction transaction = null)
         {
-            using (var command = connection.PrepareCommand(commandText, parameterSet))
+            using (var command = connection.CreateCommandWithParameters(commandText, parameterSet))
             {
                 return connection.XGenerateClassCode(command, className, generateCustomDeserializer, transaction);
             }
         }
 
+        //public static List<T> XQueryNested<T>(this IDbConnection connection, IDbCommand command, IDbTransaction transaction = null)
+        //{
+        //    connection.OpenIfNot();
+        //    command.Connection = connection;
+        //    command.Transaction = transaction;
+
+        //    command.Log();
+
+        //    using (var reader = command.ExecuteReader())
+        //    {
+        //        return NestedReader.ReadNested<T>(reader);
+        //    }
+        //}
+
+        //public static List<T> XQueryNested<T>(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null)
+        //{
+        //    using (var command = connection.CreateCommandWithParameters(commandText, parameterSet))
+        //    {
+        //        return connection.XQueryNested<T>(command, transaction);
+        //    }
+        //}
+
+
         /// <summary>
-        /// Add parameters to command from anonymous type
-        /// </summary>
-        /// <param name="command"></param>
-        /// <param name="parameterSet"></param>
-        private static void AddParameters(IDbCommand command, object parameterSet)
+            /// Add parameters to command from anonymous type
+            /// </summary>
+            /// <param name="command"></param>
+            /// <param name="parameterSet"></param>
+            private static void AddParameters(IDbCommand command, object parameterSet)
         {
             if (parameterSet == null) return;
 
@@ -324,7 +392,7 @@ namespace Xyapper
         /// <param name="commandText"></param>
         /// <param name="parameterSet"></param>
         /// <returns></returns>
-        private static IDbCommand PrepareCommand(this IDbConnection connection, string commandText, object parameterSet)
+        private static IDbCommand CreateCommandWithParameters(this IDbConnection connection, string commandText, object parameterSet)
         {
             var command = connection.CreateCommand();
             command.CommandType = CommandType.Text;
@@ -366,9 +434,22 @@ namespace Xyapper
         private static IEnumerable<object[]> ReadRowArray(IDataReader reader, int columns)
         {
             while (reader.Read())
-            {
+            { 
                 var rowArray = new object[columns];
                 reader.GetValues(rowArray);
+
+                if (XyapperManager.TrimStrings)
+                {
+                    for(int i = 0; i < rowArray.Length; i++)
+                    {
+                        var value = rowArray[i];
+                        if (value is string)
+                        {
+                            rowArray[i] = value.ToString().Trim();
+                        }
+                    }
+                }
+                
                 yield return rowArray;
             }
         }
@@ -393,15 +474,9 @@ namespace Xyapper
         {
             if (!XyapperManager.EnableLogging) return;
 
-            XyapperManager.Logger.Log(XyapperManager.CommandLogLevel, new EventId(), command, null, (cmd, exception) => 
-            {
-                var message = command.CommandText;
-                if (command.Parameters.Count > 0)
-                {
-                    message += $"\r\nPARAMETERS: \r\n{string.Join("\r\n", command.Parameters.Cast<IDbDataParameter>().Select(parameter => $"{parameter.ParameterName} = '{parameter.Value.ToString()}'"))}";
-                }
-                return message;
-            });
+            XyapperManager.Logger.Log(XyapperManager.CommandLogLevel, new EventId(), command, null,
+                (cmd, exception) => CommandLogger.DBCommandToString(cmd));
+
         }
     }
 }

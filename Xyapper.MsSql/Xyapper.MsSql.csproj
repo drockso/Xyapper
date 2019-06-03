@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -12,11 +12,11 @@
     <PackageProjectUrl>https://github.com/drockso/Xyapper</PackageProjectUrl>
     <RepositoryUrl>https://github.com/drockso/Xyapper</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
-    <Version>1.0.7</Version>
+    <Version>1.0.8</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>T-Sql, bulkcopy, orm, dapper</PackageTags>
 	<PackageIcon>Xyapper.png</PackageIcon>
-	<PackageIconUrl>https://github.com/drockso/Xyapper/raw/master/Xyapper.MsSql/Xyapper.png</PackageIconUrl>
+	<PackageIconUrl>https://github.com/drockso/Xyapper/raw/master/Xyapper.MsSql/xyapper.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>

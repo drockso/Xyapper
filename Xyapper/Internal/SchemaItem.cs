@@ -26,7 +26,7 @@ namespace Xyapper.Internal
         public int? ProviderType { get; set; }
         public bool? IsAliased { get; set; }
         public bool? IsExpression { get; set; }
-        //public bool? IsIdentity { get; set; }
+        public bool? IsIdentity { get; set; }
         public bool? IsAutoIncrement { get; set; }
         public bool? IsRowVersion { get; set; }
         public bool? IsHidden { get; set; }
@@ -40,31 +40,31 @@ namespace Xyapper.Internal
         {
             var result = new SchemaItem();
 
-            result.ColumnName = row["ColumnName"].ToType<string>();
-            result.ColumnOrdinal = row["ColumnOrdinal"].ToType<int?>();
-            result.ColumnSize = row["ColumnSize"].ToType<int?>();
-            result.NumericPrecision = row["NumericPrecision"].ToType<int?>();
-            result.NumericScale = row["NumericScale"].ToType<int?>();
-            result.IsUnique = row["IsUnique"].ToType<bool?>();
-            result.IsKey = row["IsKey"].ToType<bool?>();
-            result.BaseServerName = row["BaseServerName"].ToType<string>();
-            result.BaseCatalogName = row["BaseCatalogName"].ToType<string>();
-            result.BaseColumnName = row["BaseColumnName"].ToType<string>();
-            result.BaseSchemaName = row["BaseSchemaName"].ToType<string>();
-            result.BaseTableName = row["BaseTableName"].ToType<string>();
-            result.DataType = Type.GetType(row["DataType"].ToString());
-            result.AllowDbNull = row["AllowDBNull"].ToType<bool?>();
-            result.ProviderType = row["ProviderType"].ToType<int?>();
-            result.IsAliased = row["IsAliased"].ToType<bool?>();
-            result.IsExpression = row["IsExpression"].ToType<bool?>();
-            //result.IsIdentity = row["IsIdentity"].ToType<bool?>();
-            result.IsAutoIncrement = row["IsAutoIncrement"].ToType<bool?>();
-            result.IsRowVersion = row["IsRowVersion"].ToType<bool?>();
-            result.IsHidden = row["IsHidden"].ToType<bool?>();
-            result.IsLong = row["IsLong"].ToType<bool?>();
-            result.IsReadOnly = row["IsReadOnly"].ToType<bool?>();
-            result.ProviderSpecificDataType = Type.GetType(row["ProviderSpecificDataType"].ToString());
-            result.DataTypeName = row["DataTypeName"].ToType<string>();
+            result.ColumnName = row.Table.Columns.Contains("ColumnName") ? row["ColumnName"].ToType<string>() : null;
+            result.ColumnOrdinal = row.Table.Columns.Contains("ColumnOrdinal") ? row["ColumnOrdinal"].ToType<int?>() : null;
+            result.ColumnSize = row.Table.Columns.Contains("ColumnSize") ? row["ColumnSize"].ToType<int?>() : null;
+            result.NumericPrecision = row.Table.Columns.Contains("NumericPrecision") ? row["NumericPrecision"].ToType<int?>() : null;
+            result.NumericScale = row.Table.Columns.Contains("NumericScale") ? row["NumericScale"].ToType<int?>() : null;
+            result.IsUnique = row.Table.Columns.Contains("ColIsUniqueumnName") ? row["IsUnique"].ToType<bool?>() : null;
+            result.IsKey = row.Table.Columns.Contains("IsKey") ? row["IsKey"].ToType<bool?>() : null;
+            result.BaseServerName = row.Table.Columns.Contains("BaseServerName") ? row["BaseServerName"].ToType<string>() : null;
+            result.BaseCatalogName = row.Table.Columns.Contains("BaseCatalogName") ? row["BaseCatalogName"].ToType<string>() : null;
+            result.BaseColumnName = row.Table.Columns.Contains("BaseColumnName") ? row["BaseColumnName"].ToType<string>() : null;
+            result.BaseSchemaName = row.Table.Columns.Contains("BaseSchemaName") ? row["BaseSchemaName"].ToType<string>() : null;
+            result.BaseTableName = row.Table.Columns.Contains("BaseTableName") ? row["BaseTableName"].ToType<string>() : null;
+            result.DataType = row.Table.Columns.Contains("DataType") ? Type.GetType(row["DataType"].ToString()) : null;
+            result.AllowDbNull = row.Table.Columns.Contains("AllowDBNull") ? row["AllowDBNull"].ToType<bool?>() : null;
+            result.ProviderType = row.Table.Columns.Contains("ProviderType") ? row["ProviderType"].ToType<int?>() : null;
+            result.IsAliased = row.Table.Columns.Contains("IsAliased") ? row["IsAliased"].ToType<bool?>() : null;
+            result.IsExpression = row.Table.Columns.Contains("IsExpression") ? row["IsExpression"].ToType<bool?>() : null;
+            result.IsIdentity = row.Table.Columns.Contains("IsIdentity") ? row["IsIdentity"].ToType<bool?>() : null;
+            result.IsAutoIncrement = row.Table.Columns.Contains("IsAutoIncrement") ? row["IsAutoIncrement"].ToType<bool?>() : null;
+            result.IsRowVersion = row.Table.Columns.Contains("IsRowVersion") ? row["IsRowVersion"].ToType<bool?>() : null;
+            result.IsHidden = row.Table.Columns.Contains("IsHidden") ? row["IsHidden"].ToType<bool?>() : null;
+            result.IsLong = row.Table.Columns.Contains("IsLong") ? row["IsLong"].ToType<bool?>() : null;
+            result.IsReadOnly = row.Table.Columns.Contains("IsReadOnly") ? row["IsReadOnly"].ToType<bool?>() : null;
+            result.ProviderSpecificDataType = row.Table.Columns.Contains("ProviderSpecificDataType") ? Type.GetType(row["ProviderSpecificDataType"].ToString()) : null;
+            result.DataTypeName = row.Table.Columns.Contains("DataTypeName") ? row["DataTypeName"].ToType<string>() : null;
 
             return result;
         }

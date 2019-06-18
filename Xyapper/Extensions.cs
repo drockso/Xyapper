@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -441,14 +442,14 @@ namespace Xyapper
                 var rowArray = new object[columns];
                 reader.GetValues(rowArray);
 
-                if (XyapperManager.TrimStrings)
+                if (XyapperManager.TrimStrings || XyapperManager.EmptyStringsToNull)
                 {
                     for(int i = 0; i < rowArray.Length; i++)
                     {
                         var value = rowArray[i];
                         if (value is string)
                         {
-                            rowArray[i] = value.ToString().Trim();
+                            rowArray[i] = TypeConverter.TrimAndNull(value.ToString()) ?? (object)DBNull.Value;
                         }
                     }
                 }

@@ -41,6 +41,7 @@ XyapperManager.ExceptionLogLevel = LogLevel.Error;
 Set Xyapper settings
 ```csharp
 XyapperManager.TrimStrings = true; //Trim all strings retrieved from DB
+XyapperManager.EmptyStringsToNull = true; //Convert empty strings to NULL
 XyapperManager.UseAdvancedTypeConversions = true; //Use automatic explicit type conversions (supports enums, date strings, etc.)
 XyapperManager.CommandTimeout = 100000; //Set command timeout for all queries
 ```

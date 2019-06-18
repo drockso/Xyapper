@@ -50,5 +50,10 @@ namespace Xyapper
         /// Command timeout for all queries
         /// </summary>
         public static int CommandTimeout { get; set; } = 1000000;
+
+        /// <summary>
+        /// If string is empty or whitespace, convert in to null
+        /// </summary>
+        public static bool EmptyStringsToNull { get; set; } = false;
     }
 }

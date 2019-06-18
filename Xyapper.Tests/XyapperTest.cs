@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
@@ -21,7 +22,14 @@ namespace Xyapper.Tests
         {
             if (File.Exists("MyDatabase.sqlite"))
             {
-                File.Delete("MyDatabase.sqlite");
+                try
+                {
+                    File.Delete("MyDatabase.sqlite");
+                }
+                catch
+                {
+
+                }
             }
         }
 
@@ -59,18 +67,75 @@ namespace Xyapper.Tests
         [TestMethod]
         public void TestTrimStrings()
         {
-            var oldTrimStrings = XyapperManager.TrimStrings;
             XyapperManager.TrimStrings = true;
+            XyapperManager.EmptyStringsToNull = true;
 
             var result = Connection.XQueryScalar<string>("SELECT '  test  '");
-
-            var result2 = Connection.XGetDataTable("SELECT '  test  '");
-
-
-            XyapperManager.TrimStrings = oldTrimStrings;
-
             Assert.AreEqual(result, "test");
-            Assert.AreEqual(result2.Rows[0][0], "test");
+
+            result = Connection.XQueryScalar<string>("SELECT '    '");
+            Assert.AreEqual(result, null);
+
+            XyapperManager.TrimStrings = false;
+            XyapperManager.EmptyStringsToNull = true;
+
+            result = Connection.XQueryScalar<string>("SELECT '  test  '");
+            Assert.AreEqual(result, "  test  ");
+
+            result = Connection.XQueryScalar<string>("SELECT '    '");
+            Assert.AreEqual(result, null);
+
+            XyapperManager.TrimStrings = false;
+            XyapperManager.EmptyStringsToNull = false;
+
+            result = Connection.XQueryScalar<string>("SELECT '  test  '");
+            Assert.AreEqual(result, "  test  ");
+
+            result = Connection.XQueryScalar<string>("SELECT '    '");
+            Assert.AreEqual(result, "    ");
+
+            XyapperManager.TrimStrings = true;
+            XyapperManager.EmptyStringsToNull = false;
+
+            result = Connection.XQueryScalar<string>("SELECT '  test  '");
+            Assert.AreEqual(result, "test");
+
+            result = Connection.XQueryScalar<string>("SELECT '    '");
+            Assert.AreEqual(result, "");
+        }
+
+        [TestMethod]
+        public void TestTrimStrings2()
+        {
+            XyapperManager.TrimStrings = true;
+            XyapperManager.EmptyStringsToNull = true;
+
+            DataTable result;
+
+            result = Connection.XGetDataTable("SELECT '  test  ', '       '");
+            Assert.AreEqual(result.Rows[0][0], "test");
+            Assert.AreEqual(result.Rows[0][1], DBNull.Value);
+
+            XyapperManager.TrimStrings = true;
+            XyapperManager.EmptyStringsToNull = false;
+
+            result = Connection.XGetDataTable("SELECT '  test  ', '       '");
+            Assert.AreEqual(result.Rows[0][0], "test");
+            Assert.AreEqual(result.Rows[0][1], "");
+
+            XyapperManager.TrimStrings = false;
+            XyapperManager.EmptyStringsToNull = false;
+
+            result = Connection.XGetDataTable("SELECT '  test  ', '       '");
+            Assert.AreEqual(result.Rows[0][0], "  test  ");
+            Assert.AreEqual(result.Rows[0][1], "       ");
+
+            XyapperManager.TrimStrings = false;
+            XyapperManager.EmptyStringsToNull = true;
+
+            result = Connection.XGetDataTable("SELECT '  test  ', '       '");
+            Assert.AreEqual(result.Rows[0][0], "  test  ");
+            Assert.AreEqual(result.Rows[0][1], DBNull.Value);
         }
 
         [TestMethod]

@@ -61,12 +61,32 @@ namespace Xyapper
                 throw new XyapperException($"Failed to convert string '{value}' to boolean!");
             }
 
-            if (XyapperManager.TrimStrings && targetType == typeof(string))
+            if ((XyapperManager.TrimStrings || XyapperManager.EmptyStringsToNull) && targetType == typeof(string))
             {
-                return value.ToString().Trim();
+                return TrimAndNull(value.ToString());
             }
 
             return Convert.ChangeType(value, targetType, formatProvider);
+        }
+
+        /// <summary>
+        /// Trim and check for whitespace according to global settings
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string TrimAndNull(string value)
+        {
+            var trimmed = value.Trim();
+            if (XyapperManager.TrimStrings && !XyapperManager.EmptyStringsToNull) return trimmed;
+
+            trimmed = string.IsNullOrWhiteSpace(trimmed) ? null : trimmed;
+            if (XyapperManager.TrimStrings && XyapperManager.EmptyStringsToNull) return trimmed;
+
+            var nonTrimmed = value;
+            nonTrimmed = string.IsNullOrWhiteSpace(nonTrimmed) ? null : nonTrimmed;
+            if (!XyapperManager.TrimStrings && XyapperManager.EmptyStringsToNull) return nonTrimmed;
+
+            return value;
         }
 
         /// <summary>

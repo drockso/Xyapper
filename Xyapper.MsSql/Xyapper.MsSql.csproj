@@ -12,7 +12,7 @@
     <PackageProjectUrl>https://github.com/drockso/Xyapper</PackageProjectUrl>
     <RepositoryUrl>https://github.com/drockso/Xyapper</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
-    <Version>1.0.10</Version>
+    <Version>1.0.11</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>T-Sql, bulkcopy, orm, dapper</PackageTags>
 	<PackageIcon>Xyapper.png</PackageIcon>

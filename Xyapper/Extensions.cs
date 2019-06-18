@@ -46,10 +46,11 @@ namespace Xyapper
         /// <param name="commandText">Plain command text</param>
         /// <param name="parameterSet">Anonymous type object with parameters</param>
         /// <param name="transaction">Transaction to use</param>
+        /// <param name="commandType">Command type (text or procedure)</param>
         /// <returns></returns>
-        public static IEnumerable<T> XQuery<T>(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null) where T : new()
+        public static IEnumerable<T> XQuery<T>(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null, CommandType commandType = CommandType.Text) where T : new()
         {
-            using (var command = connection.CreateCommandWithParameters(commandText, parameterSet))
+            using (var command = connection.CreateCommandWithParameters(commandText, parameterSet, commandType))
             {
                 foreach(var item in connection.XQuery<T>(command, transaction))
                 {
@@ -69,9 +70,8 @@ namespace Xyapper
         /// <returns></returns>
         public static IEnumerable<T> XQueryProcedure<T>(this IDbConnection connection, string procedureName, object parameterSet = null, IDbTransaction transaction = null) where T : new()
         {
-            using (var command = connection.CreateCommandWithParameters(procedureName, parameterSet))
+            using (var command = connection.CreateCommandWithParameters(procedureName, parameterSet, CommandType.StoredProcedure))
             {
-                command.CommandType = CommandType.StoredProcedure;
                 foreach (var item in connection.XQuery<T>(command, transaction))
                 {
                     yield return item;
@@ -86,9 +86,10 @@ namespace Xyapper
         /// <param name="commandText">Plain command text</param>
         /// <param name="parameterSet">Anonymous type object with parameters</param>
         /// <param name="transaction">Transaction to use</param>
-        public static void XExecuteNonQuery(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null)
+        /// <param name="commandType">Command type (text or procedure)</param>
+        public static void XExecuteNonQuery(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null, CommandType commandType = CommandType.Text)
         {
-            using (var command = connection.CreateCommandWithParameters(commandText, parameterSet))
+            using (var command = connection.CreateCommandWithParameters(commandText, parameterSet, commandType))
             {
                 connection.XExecuteNonQuery(command, transaction);
             }
@@ -140,10 +141,11 @@ namespace Xyapper
         /// <param name="commandText">Plain command text</param>
         /// <param name="parameterSet">Anonymous type object with parameters</param>
         /// <param name="transaction">Transaction to use</param>
+        /// <param name="commandType">Command type (text or procedure)</param>
         /// <returns></returns>
-        public static DataTable XGetDataTable(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null)
+        public static DataTable XGetDataTable(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null, CommandType commandType = CommandType.Text)
         {
-            using (var command = connection.CreateCommandWithParameters(commandText, parameterSet))
+            using (var command = connection.CreateCommandWithParameters(commandText, parameterSet, commandType))
             {
                 return connection.XGetDataTable(command, transaction);
             }
@@ -188,9 +190,8 @@ namespace Xyapper
         /// <returns></returns>
         public static DataSet XGetDataSet(this IDbConnection connection, string commandText, object parameterSet = null, CommandType commandType = CommandType.Text, IDbTransaction transaction = null)
         {
-            using (var command = connection.CreateCommandWithParameters(commandText, parameterSet))
+            using (var command = connection.CreateCommandWithParameters(commandText, parameterSet, commandType))
             {
-                command.CommandType = commandType;
                 return connection.XGetDataSet(command, transaction);
             }
         }
@@ -216,10 +217,11 @@ namespace Xyapper
         /// <param name="commandText">Plain command text</param>
         /// <param name="parameterSet">Anonymous type object with parameters</param>
         /// <param name="transaction">Transaction to use</param>
+        /// <param name="commandType">Command type (text or procedure)</param>
         /// <returns></returns>
-        public static T XQuerySingle<T>(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null) where T : new()
+        public static T XQuerySingle<T>(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null, CommandType commandType = CommandType.Text) where T : new()
         {
-            return connection.XQuery<T>(commandText, parameterSet, transaction).FirstOrDefault();
+            return connection.XQuery<T>(commandText, parameterSet, transaction, commandType).FirstOrDefault();
         }
 
         /// <summary>
@@ -249,10 +251,11 @@ namespace Xyapper
         /// <param name="commandText">Plain command text</param>
         /// <param name="parameterSet">Anonymous type object with parameters</param>
         /// <param name="transaction">Transaction to use</param>
+        /// <param name="commandType">Command type (text or procedure)</param>
         /// <returns></returns>
-        public static T XQueryScalar<T>(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null)
+        public static T XQueryScalar<T>(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null, CommandType commandType = CommandType.Text)
         {
-            using (var command = connection.CreateCommandWithParameters(commandText, parameterSet))
+            using (var command = connection.CreateCommandWithParameters(commandText, parameterSet, commandType))
             {
                 return connection.XQueryScalar<T>(command, transaction);
             }
@@ -287,10 +290,11 @@ namespace Xyapper
         /// <param name="commandText">Plain command text</param>
         /// <param name="parameterSet">Anonymous type object with parameters</param>
         /// <param name="transaction">Transaction to use</param>
+        /// <param name="commandType">Command type (text or procedure)</param>
         /// <returns></returns>
-        public static SchemaItem[] XGetSchema(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null)
+        public static SchemaItem[] XGetSchema(this IDbConnection connection, string commandText, object parameterSet = null, IDbTransaction transaction = null, CommandType commandType = CommandType.Text)
         {
-            using (var command = connection.CreateCommandWithParameters(commandText, parameterSet))
+            using (var command = connection.CreateCommandWithParameters(commandText, parameterSet, commandType))
             {
                 return connection.XGetSchema(command, transaction);
             }
@@ -325,12 +329,13 @@ namespace Xyapper
         /// <param name="className">How to name a new class</param>
         /// <param name="generateCustomDeserializer">Make a class ICustomDeserialized</param>
         /// <param name="transaction">Transaction to use</param>
+        /// <param name="commandType">Command type (text or procedure)</param>
         /// <returns></returns>
         public static string XGenerateClassCode(this IDbConnection connection, string commandText,
             object parameterSet = null, string className = "MyClassName", bool generateCustomDeserializer = false,
-            IDbTransaction transaction = null)
+            IDbTransaction transaction = null, CommandType commandType = CommandType.Text)
         {
-            using (var command = connection.CreateCommandWithParameters(commandText, parameterSet))
+            using (var command = connection.CreateCommandWithParameters(commandText, parameterSet, commandType))
             {
                 return connection.XGenerateClassCode(command, className, generateCustomDeserializer, transaction);
             }
@@ -387,11 +392,12 @@ namespace Xyapper
         /// <param name="connection"></param>
         /// <param name="commandText"></param>
         /// <param name="parameterSet"></param>
+        /// <param name="commandType">Command type (text or procedure)</param>
         /// <returns></returns>
-        private static IDbCommand CreateCommandWithParameters(this IDbConnection connection, string commandText, object parameterSet)
+        private static IDbCommand CreateCommandWithParameters(this IDbConnection connection, string commandText, object parameterSet, CommandType commandType)
         {
             var command = connection.CreateCommand();
-            command.CommandType = CommandType.Text;
+            command.CommandType = commandType;
             command.CommandText = commandText;
             command.CommandTimeout = XyapperManager.CommandTimeout;
             AddParameters(command, parameterSet);

@@ -45,7 +45,7 @@ namespace Xyapper.Internal
             result.ColumnSize = row.Table.Columns.Contains("ColumnSize") ? row["ColumnSize"].ToType<int?>() : null;
             result.NumericPrecision = row.Table.Columns.Contains("NumericPrecision") ? row["NumericPrecision"].ToType<int?>() : null;
             result.NumericScale = row.Table.Columns.Contains("NumericScale") ? row["NumericScale"].ToType<int?>() : null;
-            result.IsUnique = row.Table.Columns.Contains("ColIsUniqueumnName") ? row["IsUnique"].ToType<bool?>() : null;
+            result.IsUnique = row.Table.Columns.Contains("IsUnique") ? row["IsUnique"].ToType<bool?>() : null;
             result.IsKey = row.Table.Columns.Contains("IsKey") ? row["IsKey"].ToType<bool?>() : null;
             result.BaseServerName = row.Table.Columns.Contains("BaseServerName") ? row["BaseServerName"].ToType<string>() : null;
             result.BaseCatalogName = row.Table.Columns.Contains("BaseCatalogName") ? row["BaseCatalogName"].ToType<string>() : null;

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -25,7 +24,7 @@ namespace Xyapper
             connection.OpenIfNot();
             command.Connection = connection;
             command.Transaction = transaction;
-
+            command.CommandTimeout = XyapperManager.CommandTimeout;
             command.Log();
 
             using (var reader = command.ExecuteReader())
@@ -70,15 +69,10 @@ namespace Xyapper
         /// <returns></returns>
         public static IEnumerable<T> XQueryProcedure<T>(this IDbConnection connection, string procedureName, object parameterSet = null, IDbTransaction transaction = null) where T : new()
         {
-            using (var command = connection.CreateCommand())
+            using (var command = connection.CreateCommandWithParameters(procedureName, parameterSet))
             {
                 command.CommandType = CommandType.StoredProcedure;
-                command.CommandText = procedureName;
-                command.Transaction = transaction;
-
-                AddParameters(command, parameterSet);
-
-                foreach(var item in connection.XQuery<T>(command, transaction))
+                foreach (var item in connection.XQuery<T>(command, transaction))
                 {
                     yield return item;
                 }
@@ -111,6 +105,7 @@ namespace Xyapper
             connection.OpenIfNot();
             command.Connection = connection;
             command.Transaction = transaction;
+            command.CommandTimeout = XyapperManager.CommandTimeout;
 
             command.Log();
             command.ExecuteNonQuery();
@@ -128,7 +123,7 @@ namespace Xyapper
             connection.OpenIfNot();
             command.Connection = connection;
             command.Transaction = transaction;
-
+            command.CommandTimeout = XyapperManager.CommandTimeout;
             command.Log();
 
             using (var reader = command.ExecuteReader())
@@ -166,7 +161,7 @@ namespace Xyapper
             connection.OpenIfNot();
             command.Connection = connection;
             command.Transaction = transaction;
-
+            command.CommandTimeout = XyapperManager.CommandTimeout;
             command.Log();
             
             var result = new DataSet();
@@ -185,6 +180,7 @@ namespace Xyapper
         /// <summary>
         /// Get a DataSet from multi-statement query
         /// </summary>
+        /// <param name="connection">DB Connection</param>
         /// <param name="commandText">Plain command text</param>
         /// <param name="parameterSet">Anonymous type object with parameters</param>
         /// <param name="transaction">Transaction to use</param>
@@ -239,7 +235,7 @@ namespace Xyapper
             connection.OpenIfNot();
             command.Connection = connection;
             command.Transaction = transaction;
-
+            command.CommandTimeout = XyapperManager.CommandTimeout;
             command.Log();
 
             return command.ExecuteScalar().ToType<T>();
@@ -274,7 +270,7 @@ namespace Xyapper
             connection.OpenIfNot();
             command.Connection = connection;
             command.Transaction = transaction;
-
+            command.CommandTimeout = XyapperManager.CommandTimeout;
             command.Log();
 
             using (var reader = command.ExecuteReader())
@@ -397,6 +393,7 @@ namespace Xyapper
             var command = connection.CreateCommand();
             command.CommandType = CommandType.Text;
             command.CommandText = commandText;
+            command.CommandTimeout = XyapperManager.CommandTimeout;
             AddParameters(command, parameterSet);
 
             return command;

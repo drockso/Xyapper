@@ -45,5 +45,10 @@ namespace Xyapper
         /// Trim all strings from DB. UseAdvancedTypeConversions must be set to true
         /// </summary>
         public static bool TrimStrings { get; set; } = true;
+
+        /// <summary>
+        /// Command timeout for all queries
+        /// </summary>
+        public static int CommandTimeout { get; set; } = 1000000;
     }
 }

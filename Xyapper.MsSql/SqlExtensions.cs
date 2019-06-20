@@ -95,6 +95,19 @@ namespace Xyapper.MsSql
         }
 
         /// <summary>
+        /// Truncate table
+        /// </summary>
+        /// <param name="sqlConnection"></param>
+        /// <param name="tableName"></param>
+        /// <param name="schema"></param>
+        /// <param name="transaction"></param>
+        public static void XTruncateTable(this SqlConnection sqlConnection, string tableName, string schema = "dbo", SqlTransaction transaction = null)
+        {
+            var sqlCommandText = $"TRUNCATE TABLE [{schema}].[{tableName}]";
+            sqlConnection.XExecuteNonQuery(sqlCommandText, null, transaction);
+        }
+
+        /// <summary>
         /// Add column to table in DB
         /// </summary>
         /// <param name="sqlConnection"></param>

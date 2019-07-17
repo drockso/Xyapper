@@ -35,6 +35,11 @@ namespace Xyapper.Internal
 
         private static string DataParameterValueToString(IDataParameter parameter)
         {
+            if (parameter.Value == null || parameter.Value == DBNull.Value)
+            {
+                return "NULL";
+            }
+
             if (QuotedTypes.Contains(parameter.Value.GetType()))
             {
                 return $"'{parameter.Value}'";

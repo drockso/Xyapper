@@ -72,7 +72,9 @@ namespace Xyapper.Internal
             {
                 var mappingAttribute = property.GetCustomAttribute<ColumnMappingAttribute>();
                 var targetColumnName = mappingAttribute != null ? mappingAttribute.ColumnName : property.Name;
-                if (!readerColumns.Contains(targetColumnName)) continue;
+                targetColumnName = Map(readerColumns, targetColumnName);
+
+                if (string.IsNullOrEmpty(targetColumnName)) continue;
 
                 var propertyExpression = Expression.Property(dataReaderParam, indexProperty, Expression.Constant(targetColumnName));
 
@@ -97,6 +99,13 @@ namespace Xyapper.Internal
         
             var block = Expression.MemberInit(constructor, assignments.Cast<MemberBinding>().ToArray());
             return Expression.Lambda<Func<IDataRecord, T>>(block, dataReaderParam);
+        }
+
+        private static string Map(string[] readerColumns, string fieldName)
+        {
+            if (readerColumns == null || string.IsNullOrEmpty(fieldName)) return null;
+
+            return readerColumns.FirstOrDefault(s => s.ToLower().Trim() == fieldName.ToLower().Trim());
         }
 
         /// <summary>

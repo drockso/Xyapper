@@ -13,7 +13,7 @@ Supports MS SQL, Postgres, Oracle, SQLite, SQL CE and any other DB with ADO.NET 
     <RepositoryType>GitHub</RepositoryType>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageProjectUrl>https://github.com/drockso/Xyapper</PackageProjectUrl>
-    <Version>1.0.15</Version>
+    <Version>1.0.16</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>sql, orm, micro-orm, dapper, ado.net</PackageTags>
     <NeutralLanguage />

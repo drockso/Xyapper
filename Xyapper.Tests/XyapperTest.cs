@@ -204,6 +204,25 @@ namespace Xyapper.Tests
         }
 
         [TestMethod]
+        public void TestCasing()
+        {
+            var result = Connection.XQuerySingle<TestType>(
+                @"SELECT 
+                    1 AS ColUmnInt, 
+                    'test' AS columnstring, 
+                    CAST('2019-01-01' AS DateTime) AS columnDate, 
+                    NULL AS ColumnDateNULL, 
+                    0.03 AS ColumnDouble,
+                    2 AS ColumnInt2");
+
+            Assert.AreEqual(result.ColumnInt, 1);
+            Assert.AreEqual(result.ColumnDateNull.HasValue, false);
+            Assert.AreEqual(result.ColumnString, "test");
+            Assert.AreEqual(result.ColumnDouble, 0.03);
+            Assert.AreEqual(result.ColumnInt2.HasValue, false);
+        }
+
+        [TestMethod]
         public void TestXQuerySingleNull()
         {
             var result = Connection.XQuerySingle<TestType>(

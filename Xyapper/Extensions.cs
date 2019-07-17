@@ -381,7 +381,7 @@ namespace Xyapper
                 var parameter = command.CreateParameter();
 
                 parameter.ParameterName = field.Name;
-                parameter.Value = field.GetValue(parameterSet);
+                parameter.Value = field.GetValue(parameterSet) ?? DBNull.Value;
                
                 command.Parameters.Add(parameter);
             }

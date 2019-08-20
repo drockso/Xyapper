@@ -24,9 +24,14 @@ namespace Xyapper.Internal
 
             foreach(var property in properties)
             {
-                if(IsMappableToColumn(property))
+                var mappingAttribute = property.GetCustomAttribute<ColumnMappingAttribute>();
+                if (mappingAttribute != null)
                 {
-                    var mappingAttribute = property.GetCustomAttribute<ColumnMappingAttribute>();
+                    if (mappingAttribute.Ignore) continue;
+                }
+
+                if (IsMappableToColumn(property))
+                {
                     var targetColumnName = mappingAttribute != null ? mappingAttribute.ColumnName : property.Name;
 
                     if (columnMapping.ContainsKey(targetColumnName))

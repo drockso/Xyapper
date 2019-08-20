@@ -64,7 +64,7 @@ namespace Xyapper.Internal
                 var newRow = result.NewRow();
                 foreach (var property in properties)
                 {
-                    if (columnMapping.ContainsKey(property.Name))
+                    if (!string.IsNullOrEmpty(property.Name) && columnMapping.ContainsKey(property.Name))
                     {
                         if (property.PropertyType.IsEnum)
                         {

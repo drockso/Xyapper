@@ -67,7 +67,7 @@ namespace Xyapper.MsSql.Internal
                 typeMap[typeof(Int64)] = SqlDbType.BigInt;
                 typeMap[typeof(Byte[])] = SqlDbType.VarBinary;
                 typeMap[typeof(Boolean)] = SqlDbType.Bit;
-                typeMap[typeof(DateTime)] = SqlDbType.DateTime2;
+                typeMap[typeof(DateTime)] = SqlDbType.DateTime;
                 typeMap[typeof(DateTimeOffset)] = SqlDbType.DateTimeOffset;
                 typeMap[typeof(Decimal)] = SqlDbType.Decimal;
                 typeMap[typeof(Double)] = SqlDbType.Float;

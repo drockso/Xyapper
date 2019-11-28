@@ -23,6 +23,7 @@ Supports MS SQL, Postgres, Oracle, SQLite, SQL CE and any other DB with ADO.NET 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
 	  <None Include="..\Xyapper\readme.md" Pack="true" PackagePath="" />
+    <None Include="..\Xyapper\xyapper.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>

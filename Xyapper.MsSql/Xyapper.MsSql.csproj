@@ -15,7 +15,7 @@
     <Version>1.0.19</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>T-Sql, bulkcopy, orm, dapper</PackageTags>
-	<PackageIcon>Xyapper.png</PackageIcon>
+	<PackageIcon>xyapper.png</PackageIcon>
 	<PackageIconUrl>https://github.com/drockso/Xyapper/raw/master/Xyapper.MsSql/xyapper.png</PackageIconUrl>
   </PropertyGroup>
 

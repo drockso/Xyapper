@@ -37,6 +37,7 @@ namespace Xyapper
                     yield return deserializer(reader);
                 }
             }
+            //connection.CloseAndDispose();
         }
 
         /// <summary>
@@ -58,6 +59,7 @@ namespace Xyapper
                     yield return item;
                 }
             }
+            //connection.CloseAndDispose();
         }
 
         /// <summary>
@@ -78,6 +80,7 @@ namespace Xyapper
                     yield return item;
                 }
             }
+            //connection.CloseAndDispose();
         }
 
         /// <summary>
@@ -94,6 +97,8 @@ namespace Xyapper
             {
                 connection.XExecuteNonQuery(command, transaction);
             }
+
+            //connection.CloseAndDispose();
         }
 
         /// <summary>
@@ -111,6 +116,7 @@ namespace Xyapper
 
             command.Log();
             command.ExecuteNonQuery();
+            //connection.CloseAndDispose();
         }
 
         /// <summary>
@@ -132,6 +138,7 @@ namespace Xyapper
             {
                 return ReadDataTable(reader);
             }
+
         }
 
 
@@ -467,6 +474,38 @@ namespace Xyapper
             if (connection.State != ConnectionState.Open)
             {
                 connection.Open();
+            }
+        }
+
+        private static void CloseAndDispose(this IDbConnection connection)
+        {
+            if(connection == null) return;
+
+            if (connection.State != ConnectionState.Closed)
+            {
+                try
+                {
+                    connection.Close();
+                }
+                catch (Exception e)
+                {
+                    if (XyapperManager.Logger != null)
+                    {
+                        XyapperManager.Logger.Log(XyapperManager.ExceptionLogLevel, e.Message);
+                    }
+                }
+            }
+
+            try
+            {
+                connection.Dispose();
+            }
+            catch (Exception e)
+            {
+                if (XyapperManager.Logger != null)
+                {
+                    XyapperManager.Logger.Log(XyapperManager.ExceptionLogLevel, e.Message);
+                }
             }
         }
 

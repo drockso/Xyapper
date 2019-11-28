@@ -170,7 +170,7 @@ namespace Xyapper.MsSql
             string schema = "dbo", 
             bool createTableIfNotExists = true, 
             bool addColumnsIfNotExist = true, 
-            int defaultCharColumnSize = 1024, 
+            int defaultCharColumnSize = 3999, 
             bool throwExceptionIfCannotMapType = false,
             SqlTransaction transaction = null)
         {
@@ -231,7 +231,7 @@ namespace Xyapper.MsSql
             }
             catch
             {
-                transaction.Rollback();
+                transaction?.Rollback();
                 throw;
             }
 

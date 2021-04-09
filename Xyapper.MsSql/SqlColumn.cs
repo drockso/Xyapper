@@ -29,7 +29,7 @@ namespace Xyapper.MsSql
         public void Deserialize(IDataRecord record)
         {
             ColumnName = record["ColumnName"] == DBNull.Value ? null : (string)record["ColumnName"];
-            ColumnType = Enum.Parse<SqlDbType>((string)record["ColumnType"], true);
+            ColumnType = (SqlDbType)Enum.Parse(typeof(SqlDbType), (string)record["ColumnType"], true);
             ColumnSize = Convert.ToInt32(record["ColumnSize"]);
 
             if(IsDoubleBytesType(ColumnType) && ColumnSize > 0)
